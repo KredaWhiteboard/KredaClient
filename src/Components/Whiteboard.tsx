@@ -6,6 +6,7 @@ function Whiteboard() {
 
   const [pickedTool, pickTool] = useState("arrow");
   const [color, pickColor] = useState("black");
+  const [thickness, setThickness] = useState(1);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
 
   const pickHandler = (toolId: string) => {
@@ -21,7 +22,7 @@ function Whiteboard() {
     setCtx(ctx);
   }, []);
 
-  useDrawing(pickedTool, canvasRef, ctx, color);
+  useDrawing(pickedTool, canvasRef, ctx, color, thickness);
 
   return (
     <div id="Board">
@@ -31,6 +32,7 @@ function Whiteboard() {
         selectedTool={pickedTool}
         changeTool={pickHandler}
         changeColor={pickColor}
+        setThickness={setThickness}
       />
     </div>
   );
@@ -40,6 +42,7 @@ type FooterProps = {
   selectedTool: string;
   changeTool: (toolId: string) => void;
   changeColor: (newColor: string) => void;
+  setThickness: (thickness: number) => void;
 };
 
 function Header() {
@@ -51,7 +54,7 @@ function Header() {
   );
 }
 
-function Footer({ selectedTool, changeTool, changeColor }: FooterProps) {
+function Footer({ selectedTool, changeTool, changeColor, setThickness }: FooterProps) {
   const [isPanelVisible, setPanelVisible] = useState(false);
 
   const tools = [
@@ -69,13 +72,18 @@ function Footer({ selectedTool, changeTool, changeColor }: FooterProps) {
   ];
 
   const colors = [
-    { id: "black", r: 0, g: 0, b: 0, a: 1 },
-    { id: "red", r: 255, g: 0, b: 0, a: 1 },
-    { id: "green", r: 0, g: 255, b: 0, a: 1 },
-    { id: "blue", r: 0, g: 0, b: 255, a: 1 },
-    { id: "orange", r: 255, g: 165, b: 0, a: 1 },
-    { id: "purple", r: 128, g: 0, b: 128, a: 64 },
+    { id: "black", r: 0, g: 0, b: 0, a: 1, thickness: 1},
+    { id: "red", r: 255, g: 0, b: 0, a: 1, thickness: 1 },
+    { id: "green", r: 0, g: 255, b: 0, a: 1, thickness: 1 },
+    { id: "blue", r: 0, g: 0, b: 255, a: 1, thickness: 1 },
+    { id: "orange", r: 255, g: 165, b: 0, a: 1, thickness: 1 },
+    { id: "purple", r: 128, g: 0, b: 128, a: 10, thickness: 6 },
   ];
+
+  const clickHandler = (color:string , thickness:number ) => {
+    changeColor(color);
+    setThickness(thickness);
+  };
 
   return (
     <div id="Footer">
@@ -101,17 +109,20 @@ function Footer({ selectedTool, changeTool, changeColor }: FooterProps) {
                   onClick={() => changeTool(tool.id)}
                   onMouseEnter={() => setPanelVisible(true)}
                 />
-
+                
                 {isPanelVisible && selectedTool === "pencil" && (
                   <div id="Panel">
                     <div id="colors">
-                      {colors.map((color) => (
+                      {colors.map((color) => {
+                        const alpha = color.a > 1 ? color.a / 255 : color.a;
+                        const rgbaColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`
+                        return(
                         <div
                           key={color.id}
-                          style={{ backgroundColor: color.id }}
-                          onClick={() => changeColor(color.id)}
+                          style={{ backgroundColor: rgbaColor}}
+                          onClick={() => clickHandler(rgbaColor, color.thickness)}
                         />
-                      ))}
+                      )})}
                     </div>
                   </div>
                 )}

@@ -4,25 +4,27 @@ export function useDrawing(
 	pickedTool: string,
 	canvasRef: React.RefObject<HTMLCanvasElement | null>,
 	ctx: CanvasRenderingContext2D | null,
-	color: string
-){
+	color: string,
+	thickness: number
+) {
 	const isDrawing = useRef(false);
-	
+
 	useEffect(() => {
 		if (!canvasRef.current || !ctx) return;
 		const canvas = canvasRef.current;
 		const startDrawing = (event: MouseEvent) => {
-			if(pickedTool !== "pencil") return;
+			if (pickedTool !== "pencil") return;
 			const offsetX = event.offsetX;
 			const offsetY = event.offsetY;
 			ctx?.beginPath();
+			ctx.lineWidth = thickness;
 			ctx.strokeStyle = color;
 			ctx?.moveTo(offsetX, offsetY);
 			isDrawing.current = true;
 		};
 
 		const draw = (event: MouseEvent) => {
-			if(!isDrawing.current || pickedTool !== "pencil") return;
+			if (!isDrawing.current || pickedTool !== "pencil") return;
 			const offsetX = event.offsetX;
 			const offsetY = event.offsetY;
 			ctx?.lineTo(offsetX, offsetY);
@@ -30,7 +32,7 @@ export function useDrawing(
 		}
 
 		const stopDrawing = () => {
-			if(!isDrawing.current || pickedTool !== "pencil") return;
+			if (!isDrawing.current || pickedTool !== "pencil") return;
 			isDrawing.current = false;
 			ctx?.closePath();
 		}
@@ -41,10 +43,11 @@ export function useDrawing(
 		canvas?.addEventListener("mouseleave", stopDrawing);
 
 		return () => {
-		canvas?.removeEventListener("mousedown", startDrawing);
-		canvas?.removeEventListener("mousemove", draw);
-		canvas?.removeEventListener("mouseup", stopDrawing);
-		canvas?.removeEventListener("mouseleave", stopDrawing);}
+			canvas?.removeEventListener("mousedown", startDrawing);
+			canvas?.removeEventListener("mousemove", draw);
+			canvas?.removeEventListener("mouseup", stopDrawing);
+			canvas?.removeEventListener("mouseleave", stopDrawing);
+		}
 	}, [ctx, pickedTool, color]);
 
 }
