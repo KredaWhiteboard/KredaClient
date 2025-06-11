@@ -48,6 +48,6 @@ export function useDrawing(
 			canvas?.removeEventListener("mouseup", stopDrawing);
 			canvas?.removeEventListener("mouseleave", stopDrawing);
 		}
-	}, [ctx, pickedTool, color]);
+	}, [ctx, pickedTool, color, thickness]);
 
 }
