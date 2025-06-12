@@ -4,11 +4,14 @@ import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { useUser } from "../UserContext";
 import { useParams } from "react-router-dom";
 
+
+type ColorObjectType = {r:number, g:number, b:number, a:number};
+
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [pickedTool, pickTool] = useState("Pencil");
-  const [color, pickColor] = useState("Black");
+  const [color, pickColor] = useState({ r: 0, g: 0, b: 0, a: 1 });
   const [thickness, setThickness] = useState(1);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [connection, setConnection] = useState<HubConnection | null>(null);
@@ -49,7 +52,6 @@ function Whiteboard() {
     newConnection.stop();
   };
 }}, [username, whiteboardId]);
-
   useDrawing(pickedTool, canvasRef, ctx, color, thickness, connection, username);
 
   return (
@@ -63,7 +65,7 @@ function Whiteboard() {
         changeTool={pickHandler}
         changeColor={pickColor}
         setThickness={setThickness}
-      />
+        />
     </div>
   );
 }
@@ -71,7 +73,7 @@ function Whiteboard() {
 type FooterProps = {
   selectedTool: string;
   changeTool: (toolId: string) => void;
-  changeColor: (newColor: string) => void;
+  changeColor: (newColor: ColorObjectType) => void;
   setThickness: (thickness: number) => void;
 };
 
@@ -110,7 +112,7 @@ function Footer({ selectedTool, changeTool, changeColor, setThickness }: FooterP
     { id: "Purple", r: 128, g: 0, b: 128, a: 10, thickness: 6 },
   ];
 
-  const clickHandler = (color:string , thickness:number ) => {
+  const clickHandler = (color: ColorObjectType , thickness:number ) => {
     changeColor(color);
     setThickness(thickness);
   };
@@ -145,12 +147,13 @@ function Footer({ selectedTool, changeTool, changeColor, setThickness }: FooterP
                     <div id="Colors">
                       {colors.map((color) => {
                         const alpha = color.a > 1 ? color.a / 255 : color.a;
-                        const rgbaColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`
+                        const rgbaColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
+                        const clr = {r: color.r, g: color.g, b: color.b, a: color.a};
                         return(
                         <div
                           key={color.id}
                           style={{ backgroundColor: rgbaColor}}
-                          onClick={() => clickHandler(rgbaColor, color.thickness)}
+                          onClick={() => clickHandler(clr, color.thickness)}
                         />
                       )})}
                     </div>
