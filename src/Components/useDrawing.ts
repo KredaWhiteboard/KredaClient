@@ -15,6 +15,7 @@ export function useDrawing(
 	useEffect(() => {
 		if (!canvasRef.current || !ctx) return;
 		const canvas = canvasRef.current;
+
 		const startDrawing = (event: MouseEvent) => {
 			if (pickedTool !== "pencil") return;
 			const offsetX = event.offsetX;
@@ -33,21 +34,21 @@ export function useDrawing(
 			ctx?.lineTo(offsetX, offsetY);
 			ctx?.stroke();
 
-			if (connection) {
-				// Stwórz obiekt z danymi do wysłania
-				const lineData = {
-					x: offsetX,
-					y: offsetY,
-					isDrawing: isDrawing,
-				};
+			// if (connection) {
+			// 	// Stwórz obiekt z danymi do wysłania
+			// 	const lineData = {
+			// 		x: offsetX,
+			// 		y: offsetY,
+			// 		isDrawing: isDrawing,
+			// 	};
 
-				// Wywołaj metodę na serwerze
-				try {
-					connection.invoke("DrawLine", lineData);
-				} catch (e) {
-					console.error("Błąd wysyłania danych: ", e);
-				}
-			}
+			// 	// Wywołaj metodę na serwerze
+			// 	try {
+			// 		connection.invoke("DrawLine", lineData);
+			// 	} catch (e) {
+			// 		console.error("Błąd wysyłania danych: ", e);
+			// 	}
+			// }
 		};
 
 		const stopDrawing = () => {
@@ -67,6 +68,6 @@ export function useDrawing(
 			canvas?.removeEventListener("mouseup", stopDrawing);
 			canvas?.removeEventListener("mouseleave", stopDrawing);
 		}
-	}, [ctx, pickedTool, color, thickness]);
+	}, [ctx, pickedTool, color]);
 
 }

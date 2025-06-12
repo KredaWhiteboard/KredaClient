@@ -8,7 +8,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const router = createBrowserRouter([
   { path: "/", element: <WelcomePage /> },
-  { path: "Whiteboard", element: <Whiteboard /> },
+  { path: "whiteboard/:whiteboardId", element: <Whiteboard /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(

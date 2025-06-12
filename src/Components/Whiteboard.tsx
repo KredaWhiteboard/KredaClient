@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { useDrawing } from "./useDrawing";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { useUser } from "../UserContext";
+import { useParams } from "react-router-dom";
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -12,22 +13,23 @@ function Whiteboard() {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [connection, setConnection] = useState<HubConnection | null>(null);
   const {username} = useUser();
+  const {whiteboardId} = useParams();
   
   const pickHandler = (toolId: string) => {
     pickTool(toolId);
   };
   
   useEffect(() => {
-    console.log(username);
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const ctx = canvas.getContext("2d");
     setCtx(ctx);
-    const whiteboardId = "jakies-prawdziwe-id";
+    if(username && whiteboardId){
+    const connectionString =`http://localhost:5000/whiteboard/${whiteboardId}?${username}`;
     const newConnection = new HubConnectionBuilder()
-      .withUrl(`http://localhost:5000/whiteboard/${whiteboardId}`)
+      .withUrl(connectionString)
       .withAutomaticReconnect()
       .build();
     
@@ -43,7 +45,7 @@ function Whiteboard() {
   return () => {
     newConnection.stop();
   };
-  }, []);
+}}, [username, whiteboardId]);
 
   useDrawing(pickedTool, canvasRef, ctx, color, thickness, connection, username);
 
