@@ -45,7 +45,7 @@ function Whiteboard() {
   };
   }, []);
 
-  useDrawing(pickedTool, canvasRef, ctx, color, thickness, connection);
+  useDrawing(pickedTool, canvasRef, ctx, color, thickness, connection, username);
 
   return (
     <div id="Board">

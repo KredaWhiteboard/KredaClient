@@ -7,7 +7,8 @@ export function useDrawing(
 	ctx: CanvasRenderingContext2D | null,
 	color: string,
 	thickness: number,
-	connection: HubConnection | null
+	connection: HubConnection | null,
+	username: string | null
 ) {
 	const isDrawing = useRef(false);
 
