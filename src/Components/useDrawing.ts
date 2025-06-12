@@ -39,26 +39,25 @@ export function useDrawing(
 				ctx?.lineTo(offsetX, offsetY);
 				ctx?.stroke();
 
-				// if (connection) {
-				// 	// Stwórz obiekt z danymi do wysłania
-				// 	const lineData = {
-				// 		x: offsetX,
-				// 		y: offsetY,
-				// 		isDrawing: isDrawing,
-				// 	};
+				if (connection) {
+					const SendUserAction = {
+						username: username,
+						x: offsetX,
+						y: offsetY,
+						isDrawing: isDrawing.current,
+					};
 
-				// 	// Wywołaj metodę na serwerze
-				// 	try {
-				// 		connection.invoke("DrawLine", lineData);
-				// 	} catch (e) {
-				// 		console.error("Błąd wysyłania danych: ", e);
-				// 	}
-				// }
+					try {
+						connection.invoke("SendUserAction", SendUserAction);
+					} catch (e) {
+						console.error("Błąd wysyłania danych: ", e);
+					}
+				}
 			}
 			else if (pickedTool === "rubber" && isDrawing.current) ctx.clearRect(event.offsetX, event.offsetY, 35, 35);
 		};
 
-		const mouseUpHandler = (event: MouseEvent) => {
+		const mouseUpHandler = () => {
 			if (pickedTool === "rubber" && isDrawing.current) isDrawing.current = false;
 			else if (isDrawing.current && pickedTool == "pencil") {
 				isDrawing.current = false;
@@ -78,4 +77,18 @@ export function useDrawing(
 		}
 	}, [ctx, pickedTool, color]);
 
+}
+
+export function drawDottedGrid(ctx: CanvasRenderingContext2D, width: number, height: number) {
+	const spacing = 30;
+	const dotRadius = 1;
+	ctx.fillStyle = '#dcdcdc';
+
+	for (let x = 0; x < width; x += spacing) {
+		for (let y = 0; y < height; y += spacing) {
+			ctx.beginPath();
+			ctx.arc(x, y, dotRadius, 0, 2 * Math.PI);
+			ctx.fill();
+		}
+	}
 }

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { useDrawing } from "./useDrawing";
+import { drawDottedGrid, useDrawing } from "./useDrawing";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { useUser } from "../UserContext";
 import { useParams } from "react-router-dom";
@@ -25,9 +25,12 @@ function Whiteboard() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const ctx = canvas.getContext("2d");
-    setCtx(ctx);
+    if (ctx) {
+        drawDottedGrid(ctx, canvas.width, canvas.height);
+        setCtx(ctx);
+    }
     if(username && whiteboardId){
-    const connectionString =`http://localhost:5000/whiteboard/${whiteboardId}?${username}`;
+    const connectionString =`http://localhost:5000/whiteboard/${whiteboardId}?username=${username}`;
     const newConnection = new HubConnectionBuilder()
       .withUrl(connectionString)
       .withAutomaticReconnect()
