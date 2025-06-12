@@ -1,5 +1,6 @@
 import type { HubConnection } from "@microsoft/signalr";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
+import { throttle } from "lodash";
 
 export function useDrawing(
 	pickedTool: string,
@@ -11,6 +12,20 @@ export function useDrawing(
 	username: string | null
 ) {
 	const isDrawing = useRef(false);
+
+	const throttledSendAction = useCallback(
+		throttle((x: number, y: number) => {
+			if (connection) {
+				try {
+					const status = isDrawing.current;
+					connection.invoke("SendUserAction", { username, x, y, status });
+				} catch (e) {
+					console.error("Błąd wysyłania danych: ", e);
+				}
+			}
+		}, 50),
+		[connection]
+	);
 
 	useEffect(() => {
 		if (!canvasRef.current || !ctx) return;
@@ -55,6 +70,10 @@ export function useDrawing(
 				}
 			}
 			else if (pickedTool === "rubber" && isDrawing.current) ctx.clearRect(event.offsetX, event.offsetY, 35, 35);
+			else {
+				const { offsetX, offsetY } = event;
+				throttledSendAction(offsetX, offsetY);
+			}
 		};
 
 		const mouseUpHandler = () => {
@@ -64,18 +83,27 @@ export function useDrawing(
 				ctx?.closePath();
 			}
 		};
+
+		// const trackCursorHandler = (event: MouseEvent) => {
+		// 	const { offsetX, offsetY } = event;
+		// 	throttledCursorUpdate(offsetX, offsetY);
+		// };
+
 		canvas?.addEventListener("mousedown", mouseDownHandler);
 		canvas?.addEventListener("mousemove", mouseMoveHandler);
 		canvas?.addEventListener("mouseup", mouseUpHandler);
 		canvas?.addEventListener("mouseleave", mouseUpHandler);
+		// canvas.addEventListener("mousemove", trackCursorHandler);
 
 		return () => {
 			canvas?.removeEventListener("mousedown", mouseDownHandler);
 			canvas?.removeEventListener("mousemove", mouseMoveHandler);
 			canvas?.removeEventListener("mouseup", mouseUpHandler);
 			canvas?.removeEventListener("mouseleave", mouseUpHandler);
+			// canvas.removeEventListener("mousemove", trackCursorHandler);
+			throttledSendAction.cancel();
 		}
-	}, [ctx, pickedTool, color]);
+	}, [ctx, pickedTool, color, throttledSendAction, connection, username]);
 
 }
 

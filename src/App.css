@@ -1,30 +1,30 @@
-body{
+body {
   padding: 0;
   margin: 0;
 }
 
-#container{
+#container {
   height: 100vh;
-  background-image: url(../public/Gemini_Generated_Image_cpnptacpnptacpnp.jpg);
+  background-image: url(../public/background.jpg);
   background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.box{
+.box {
   background-color: rgba(216, 181, 115, 0.603);
   width: 25%;
   height: 60%;
   border-radius: 20px;
   transform: translateY(-5%);
   display: flex;
-  justify-content:space-evenly;
+  justify-content: space-evenly;
   align-items: center;
   flex-direction: column;
 }
 
-figure{
+figure {
   margin-block: 0px;
   margin-inline: 0px;
   display: flex;
@@ -32,12 +32,12 @@ figure{
   flex-direction: column;
 }
 
-figcaption{
+figcaption {
   margin-top: 10px;
   font-size: 250%;
 }
 
-form{
+form {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -46,11 +46,11 @@ form{
   width: 60%;
 }
 
-.box img{
+.box img {
   width: 25%;
 }
 
-.color-select{
+.color-select {
   width: 100%;
   height: 35%;
   background-color: rgba(255, 255, 255, 0.685);
@@ -61,25 +61,25 @@ form{
 }
 
 
-.color-select div{
+.color-select div {
   background-color: red;
   width: 30%;
   height: 30%;
 }
 
-#Board{
+#Board {
   height: 100vh;
   width: 100vw;
 }
 
-#Header{
+#Header {
   position: relative;
   z-index: 1000;
   display: flex;
   justify-content: end;
 }
 
-#Footer{
+#Footer {
   display: flex;
   position: absolute;
   z-index: 1000;
@@ -88,7 +88,7 @@ form{
   bottom: 8px;
 }
 
-#Scale{
+#Scale {
   width: 8%;
   background-color: red;
   display: flex;
@@ -97,7 +97,7 @@ form{
   align-items: center;
 }
 
-#PencilBox{
+#PencilBox {
   width: 20%;
   background-color: red;
   margin-left: auto;
@@ -108,16 +108,15 @@ form{
   align-items: center;
 }
 
-#PencilBox:hover{
+#PencilBox:hover {
   cursor: pointer;
 }
 
-#Header img{
+#Header img {
   height: 50px;
 }
 
-canvas
-{
+canvas {
   position: absolute;
   top: 0;
   left: 0;
@@ -125,11 +124,11 @@ canvas
   height: 100%;
 }
 
-#PencilBox img{
+#PencilBox img {
   height: 40%;
 }
 
-#PencilBox img.active{
+#PencilBox img.active {
   background-color: yellow;
 }
 
@@ -137,7 +136,7 @@ canvas
   height: 60%;
 }
 
-#Panel{
+#Panel {
   position: absolute;
   z-index: 1000;
   height: 100px;
@@ -147,7 +146,7 @@ canvas
   color: rgba(128, 0, 128, 0.664);
 }
 
-#colors{
+#colors {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -155,11 +154,11 @@ canvas
   border: 1px solid red;
 }
 
-#colors div{
+#colors div {
   width: 40px;
   height: 40px;
 }
 
-#colors div:hover{
+#colors div:hover {
   cursor: pointer;
 }
