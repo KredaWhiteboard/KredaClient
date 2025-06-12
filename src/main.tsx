@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import WelcomePage from "./Components/WelcomePage.tsx";
 import Whiteboard from "./Components/Whiteboard.tsx";
+import { UserProvider } from "./UserContext.tsx";
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -11,7 +12,9 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>
+  <UserProvider>
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>
+  </UserProvider>
 );

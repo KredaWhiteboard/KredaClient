@@ -1,5 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { useDrawing } from "./useDrawing";
+import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import { useUser } from "../UserContext";
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -8,21 +10,42 @@ function Whiteboard() {
   const [color, pickColor] = useState("black");
   const [thickness, setThickness] = useState(1);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
-
+  const [connection, setConnection] = useState<HubConnection | null>(null);
+  const {username} = useUser();
+  
   const pickHandler = (toolId: string) => {
     pickTool(toolId);
   };
-
+  
   useEffect(() => {
+    console.log(username);
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const ctx = canvas.getContext("2d");
     setCtx(ctx);
+    const whiteboardId = "jakies-prawdziwe-id";
+    const newConnection = new HubConnectionBuilder()
+      .withUrl(`http://localhost:5000/whiteboard/${whiteboardId}`)
+      .withAutomaticReconnect()
+      .build();
+    
+    setConnection(newConnection);
+
+     newConnection.start()
+    .then(() => {
+      console.log("Połączenie z SignalR Hub nawiązane pomyślnie!");
+    })
+    .catch(e => {
+      console.error("Błąd podczas nawiązywania połączenia z SignalR: ", e);
+    });
+  return () => {
+    newConnection.stop();
+  };
   }, []);
 
-  useDrawing(pickedTool, canvasRef, ctx, color, thickness);
+  useDrawing(pickedTool, canvasRef, ctx, color, thickness, connection);
 
   return (
     <div id="Board">
