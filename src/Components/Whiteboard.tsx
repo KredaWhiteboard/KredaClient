@@ -1,6 +1,10 @@
 import { useRef, useEffect, useState } from "react";
 import { useDrawing } from "./useDrawing";
-
+import { useHandPanZoom } from "./useHandPanZoom";
+import { useCanvasSize } from "./useCanvasSize";
+ 
+const W = 3000;
+const H = 3000;
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -15,18 +19,33 @@ function Whiteboard() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+
+    canvas.width  = W;
+    canvas.height = H;
+    canvas.style.width  = `${W}px`;
+    canvas.style.height = `${H}px`;
+
     const ctx = canvas.getContext("2d");
     setCtx(ctx);
   }, []);
 
   useDrawing(pickedTool, canvasRef, ctx, color);
-
+  useCanvasSize({ ref: canvasRef, setCtx });
+  useHandPanZoom({
+    ref:         canvasRef,
+    pickedTool,
+    setCtx,
+    scaleStep:   0.1,
+    minScale:    0.5,
+    maxScale:    3,
+  });
   return (
     <div id="Board">
       <Header />
-      <canvas ref={canvasRef}></canvas>
+      <canvas 
+        ref={canvasRef}
+        className="canvas-bg"
+      ></canvas>
       <Footer
         selectedTool={pickedTool}
         changeTool={pickHandler}
