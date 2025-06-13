@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // —— zmienne kolorystyczne ——————————————————————————————————————————————
 $color-bg:          #ffffff;
 $color-header-bg:   #ffffff;
@@ -6,7 +8,7 @@ $color-border:      #82828244;
 $color-zoom-icon:   #555555;
 $color-tool-active: #ffcc00;
 $color-tool-hover:  #ddd;
-
+$color-front: #f76c00;
 // paleta dodatkowa (przykład)
 $color-red:    #e74c3c;
 $color-yellow: #f1c40f;
@@ -223,7 +225,7 @@ figure {
     margin-top: 8px;
     font-size: 24px;
     font-weight: bold;
-    color: #f76c00;
+    color: $color-front;
   }
 }
 
@@ -245,7 +247,7 @@ input#login {
   outline: none;
   transition: border-color 0.2s;
   &:focus {
-    border-color: #f76c00;
+    border-color: $color-front;
   }
 }
 
@@ -319,7 +321,7 @@ button[type='submit'] {
   width: 100%;
   border: none;
   border-radius: 16px;
-  background: #f76c00;
+  background: $color-front;
   color: #fff;
   font-size: 14px;
   font-weight: bold;
@@ -327,7 +329,7 @@ button[type='submit'] {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background 0.2s;
   &:hover {
-    background: darken(#f76c00, 5%);
+    background: color.adjust($color-front,$lightness: -5%);
   }
 }
 }

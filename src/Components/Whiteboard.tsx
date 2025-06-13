@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { drawDottedGrid, useDrawing } from "./useDrawing";
+import { drawDottedGrid, useDrawing} from "./useDrawing";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { useUser } from "../UserContext";
 import { useParams } from "react-router-dom";
@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 
 type ColorObjectType = {r:number, g:number, b:number, a:number};
 
-function Whiteboard() {
+async function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [pickedTool, pickTool] = useState("Pencil");
@@ -41,7 +41,7 @@ function Whiteboard() {
     
     setConnection(newConnection);
 
-     newConnection.start()
+    newConnection.start()
     .then(() => {
       console.log("Połączenie z SignalR Hub nawiązane pomyślnie!");
     })
@@ -109,7 +109,7 @@ function Footer({ selectedTool, changeTool, changeColor, setThickness }: FooterP
     { id: "Green", r: 0, g: 255, b: 0, a: 1, thickness: 1 },
     { id: "Blue", r: 0, g: 0, b: 255, a: 1, thickness: 1 },
     { id: "Orange", r: 255, g: 165, b: 0, a: 1, thickness: 1 },
-    { id: "Purple", r: 128, g: 0, b: 128, a: 10, thickness: 6 },
+    { id: "Purple", r: 128, g: 0, b: 128, a: 0.2, thickness: 6 },
   ];
 
   const clickHandler = (color: ColorObjectType , thickness:number ) => {

@@ -42,28 +42,33 @@ export function useDrawing(
 		[connection]
 	);
 
-	const drawCursor = (ctx: CanvasRenderingContext2D, x: number, y: number, username: string) => {
-		ctx.fillStyle = "black";
-		ctx.strokeStyle = 'white';
-		ctx.lineWidth = 2;
-		ctx.beginPath();
-		ctx.moveTo(x, y);
-		ctx.lineTo(x + 10, y + 25);
-		ctx.lineTo(x + 20, y + 20);
-		ctx.closePath();
-		ctx.fill();
-		ctx.stroke();
-		ctx.font = '14px sans-serif';
-		ctx.fillText(username, x + 25, y + 35);
-	};
+	// const drawCursor = (ctx: CanvasRenderingContext2D, x: number, y: number, username: string) => {
+	// 	ctx.fillStyle = "black";
+	// 	ctx.strokeStyle = 'white';
+	// 	ctx.lineWidth = 2;
+	// 	ctx.beginPath();
+	// 	ctx.moveTo(x, y);
+	// 	ctx.lineTo(x + 10, y + 25);
+	// 	ctx.lineTo(x + 20, y + 20);
+	// 	ctx.closePath();
+	// 	ctx.fill();
+	// 	ctx.stroke();
+	// 	ctx.font = '14px sans-serif';
+	// 	ctx.fillText(username, x + 25, y + 35);
+	// };
 
 	useEffect(() => {
+		console.log("🔔 useDrawing efekt, ctx:", ctx, "tool:", pickedTool);
+		console.log("🔍 username:", username);
+
 		if (!canvasRef.current || !ctx || !username) return;
 		const canvas = canvasRef.current;
 
 		const mouseDownHandler = (event: MouseEvent) => {
+			console.log("🔴 mousedown", event.offsetX, event.offsetY);
 			if (pickedTool === "Pencil" || pickedTool === "Rubber") {
 				isDrawing.current = true;
+
 				ctx.beginPath();
 				ctx.moveTo(event.offsetX, event.offsetY);
 
@@ -76,13 +81,17 @@ export function useDrawing(
 				};
 				if (connection) connection.invoke("SendUserAction", startAction);
 			}
+			
 		};
 
 		const mouseMoveHandler = (event: MouseEvent) => {
+			console.log("🟢 mousemove", event.offsetX, event.offsetY, "drawing?", isDrawing.current);
 			const { offsetX, offsetY } = event;
 			let action: SentUserAction;
 
 			if (isDrawing.current && (pickedTool === "Pencil" || pickedTool === "Rubber")) {
+				  console.log("mousemove", event.offsetX, event.offsetY);
+
 				if (pickedTool === "Pencil") {
 					ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a > 1 ? color.a / 255 : color.a})`;
 					ctx.lineWidth = thickness;
@@ -112,7 +121,9 @@ export function useDrawing(
 		};
 
 		const mouseUpHandler = (event: MouseEvent) => {
+			console.log("⚫ mouseup");
 			if (isDrawing.current) {
+				console.log("mouseup");
 				isDrawing.current = false;
 				ctx.closePath();
 
