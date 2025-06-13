@@ -59,7 +59,7 @@ async function Whiteboard() {
     newConnection.stop();
   };
 }}, [username, whiteboardId]);
-  useDrawing(pickedTool, canvasRef, cursorCanvasRef, backgroundCanvasRef, ctx, color, thickness, connection, username);
+  useDrawing(pickedTool, canvasRef, cursorCanvasRef, ctx, color, thickness, connection, username);
 
   return (
     <div id="Board">
