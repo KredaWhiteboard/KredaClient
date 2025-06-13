@@ -1,22 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../UserContext";
 
 function WelcomePage() {
   const [login, setLogin] = useState("");
-
   const navigate = useNavigate();
+  const {setUsername} = useUser();
 
   const Submited = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (login.trim() !== "") {
+      setUsername(login.trim());
       navigate("/Whiteboard");
     } else {
       alert("Proszę podać login.");
     }
   };
   return (
-    <div id="container">
+    <div id="container" className="welcome-page">
       <div className="box">
         <figure>
           <img src="public/logo_1.svg" alt="" />
