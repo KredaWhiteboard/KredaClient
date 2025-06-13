@@ -7,8 +7,8 @@ import { useParams } from "react-router-dom";
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [pickedTool, pickTool] = useState("arrow");
-  const [color, pickColor] = useState("black");
+  const [pickedTool, pickTool] = useState("Pencil");
+  const [color, pickColor] = useState("Black");
   const [thickness, setThickness] = useState(1);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [connection, setConnection] = useState<HubConnection | null>(null);
@@ -55,7 +55,9 @@ function Whiteboard() {
   return (
     <div id="Board">
       <Header />
-      <canvas ref={canvasRef}></canvas>
+      <canvas 
+      ref={canvasRef}
+      ></canvas>
       <Footer
         selectedTool={pickedTool}
         changeTool={pickHandler}
@@ -86,26 +88,26 @@ function Footer({ selectedTool, changeTool, changeColor, setThickness }: FooterP
   const [isPanelVisible, setPanelVisible] = useState(false);
 
   const tools = [
-    { id: "arrow", source: "/cursor.svg" },
-    { id: "hand", source: "/Hand.svg" },
-    { id: "pencil", source: "/pencil.svg" },
-    { id: "rubber", source: "/Rubber.svg" },
-    { id: "image", source: "/image.svg" },
-    { id: "text", source: "/Text.svg" },
+    { id: "Arrow", source: "/cursor.svg" },
+    { id: "Hand", source: "/Hand.svg" },
+    { id: "Pencil", source: "/pencil.svg" },
+    { id: "Rubber", source: "/Rubber.svg" },
+    { id: "Image", source: "/image.svg" },
+    { id: "Text", source: "/Text.svg" },
   ];
 
-  const magnification = [
-    { id: "plus", source: "/plus-lg.svg" },
-    { id: "minus", source: "/dash.svg" },
+  const zoom = [
+    { id: "Plus", source: "/plus-lg.svg" },
+    { id: "Minus", source: "/dash.svg" },
   ];
 
   const colors = [
-    { id: "black", r: 0, g: 0, b: 0, a: 1, thickness: 1},
-    { id: "red", r: 255, g: 0, b: 0, a: 1, thickness: 1 },
-    { id: "green", r: 0, g: 255, b: 0, a: 1, thickness: 1 },
-    { id: "blue", r: 0, g: 0, b: 255, a: 1, thickness: 1 },
-    { id: "orange", r: 255, g: 165, b: 0, a: 1, thickness: 1 },
-    { id: "purple", r: 128, g: 0, b: 128, a: 10, thickness: 6 },
+    { id: "Black", r: 0, g: 0, b: 0, a: 1, thickness: 1},
+    { id: "Red", r: 255, g: 0, b: 0, a: 1, thickness: 1 },
+    { id: "Green", r: 0, g: 255, b: 0, a: 1, thickness: 1 },
+    { id: "Blue", r: 0, g: 0, b: 255, a: 1, thickness: 1 },
+    { id: "Orange", r: 255, g: 165, b: 0, a: 1, thickness: 1 },
+    { id: "Purple", r: 128, g: 0, b: 128, a: 10, thickness: 6 },
   ];
 
   const clickHandler = (color:string , thickness:number ) => {
@@ -116,14 +118,14 @@ function Footer({ selectedTool, changeTool, changeColor, setThickness }: FooterP
   return (
     <div id="Footer">
       <div id="Scale">
-        {magnification.map((sign) => (
+        {zoom.map((sign) => (
           <img key={sign.id} src={sign.source} alt={sign.id} />
         ))}
       </div>
       <div id="PencilBox">
         {tools.map((tool) => {
           const isActive = tool.id === selectedTool;
-          if (tool.id === "pencil") {
+          if (tool.id === "Pencil") {
             return (
               <div
                 key={tool.id}
@@ -138,9 +140,9 @@ function Footer({ selectedTool, changeTool, changeColor, setThickness }: FooterP
                   onMouseEnter={() => setPanelVisible(true)}
                 />
                 
-                {isPanelVisible && selectedTool === "pencil" && (
+                {isPanelVisible && selectedTool === "Pencil" && (
                   <div id="Panel">
-                    <div id="colors">
+                    <div id="Colors">
                       {colors.map((color) => {
                         const alpha = color.a > 1 ? color.a / 255 : color.a;
                         const rgbaColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`

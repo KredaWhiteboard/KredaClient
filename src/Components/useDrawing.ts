@@ -32,7 +32,7 @@ export function useDrawing(
 		const canvas = canvasRef.current;
 
 		const mouseDownHandler = (event: MouseEvent) => {
-			if (pickedTool === "pencil") {
+			if (pickedTool === "Pencil") {
 				const offsetX = event.offsetX;
 				const offsetY = event.offsetY;
 				ctx?.beginPath();
@@ -41,14 +41,14 @@ export function useDrawing(
 				ctx?.moveTo(offsetX, offsetY);
 				isDrawing.current = true;
 			}
-			else if (pickedTool === "rubber") {
+			else if (pickedTool === "Rubber") {
 				ctx.clearRect(event.offsetX, event.offsetY, 35, 35);
 				isDrawing.current = true;
 			}
 		};
 
 		const mouseMoveHandler = (event: MouseEvent) => {
-			if (isDrawing.current && pickedTool === "pencil") {
+			if (isDrawing.current && pickedTool === "Pencil") {
 				const offsetX = event.offsetX;
 				const offsetY = event.offsetY;
 				ctx?.lineTo(offsetX, offsetY);
@@ -69,7 +69,7 @@ export function useDrawing(
 					}
 				}
 			}
-			else if (pickedTool === "rubber" && isDrawing.current) ctx.clearRect(event.offsetX, event.offsetY, 35, 35);
+			else if (pickedTool === "Rubber" && isDrawing.current) ctx.clearRect(event.offsetX, event.offsetY, 35, 35);
 			else {
 				const { offsetX, offsetY } = event;
 				throttledSendAction(offsetX, offsetY);
@@ -77,8 +77,8 @@ export function useDrawing(
 		};
 
 		const mouseUpHandler = () => {
-			if (pickedTool === "rubber" && isDrawing.current) isDrawing.current = false;
-			else if (isDrawing.current && pickedTool == "pencil") {
+			if (pickedTool === "Rubber" && isDrawing.current) isDrawing.current = false;
+			else if (isDrawing.current && pickedTool == "Pencil") {
 				isDrawing.current = false;
 				ctx?.closePath();
 			}

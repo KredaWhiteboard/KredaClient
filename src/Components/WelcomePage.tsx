@@ -18,7 +18,7 @@ function WelcomePage() {
     }
   };
   return (
-    <div id="container">
+    <div id="container" className="welcome-page">
       <div className="box">
         <figure>
           <img src="public/logo_1.svg" alt="" />

@@ -1,0 +1,333 @@
+// —— zmienne kolorystyczne ——————————————————————————————————————————————
+$color-bg:          #ffffff;
+$color-header-bg:   #ffffff;
+$color-footer-bg:   #ffffff;
+$color-border:      #82828244;
+$color-zoom-icon:   #555555;
+$color-tool-active: #ffcc00;
+$color-tool-hover:  #ddd;
+
+// paleta dodatkowa (przykład)
+$color-red:    #e74c3c;
+$color-yellow: #f1c40f;
+$color-green:  #2ecc71;
+$color-blue:   #3498db;
+
+// —— global resets —————————————————————————————————————————————————————
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: sans-serif;
+}
+img {
+  display: inline-block;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;        
+}
+// —— główny kontener —————————————————————————————————————————————————
+#root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+#Board{
+  // —— Header ————————————————————————————————————————————————————————
+  #Header {
+    position: fixed;
+    top: 1rem;
+    right: 2rem;
+    height: 3rem;
+    width: 8rem;
+    display: flex;
+    padding: 1rem 0;
+    justify-content: space-evenly;
+    align-items: center;
+    border: 2px solid $color-border;
+    border-radius: 1.5rem;    
+    z-index: 69;
+    transition: transform 0.15s, box-shadow 0.15s;
+    background-color: $color-bg;
+
+    > :not(:first-child) {
+      opacity: 0.6;
+    }
+
+    img,
+    button {
+      height: 1.8rem;
+      max-height: 3rem;
+      width: auto;
+      cursor: pointer;
+      &:hover {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+    } 
+
+    &:hover {
+        transform: scale(1.1);
+    } 
+  }
+  
+
+  // —— Canvas ————————————————————————————————————————————————————————
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  // —— Footer ————————————————————————————————————————————————————————
+  #Footer {
+    position: fixed;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    height: 3rem;
+    
+    z-index: 69;
+    // lewa część: zoom
+    #Scale {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      border: 2px solid $color-border;
+      border-radius: 1.5rem;
+      background-color: $color-bg;
+      img {
+        flex-shrink: 0;
+        width: 1.5rem;       // narzucamy stałą szerokość
+        height: 1.5rem;      // i wysokość
+        cursor: pointer;
+        &:first-child { margin-right: 0.5rem; }
+        &:hover { filter: brightness(0.8); }
+      }
+    }
+
+    // środkowa część: narzędzia
+    #PencilBox {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      margin: 0 auto;
+      border: 2px solid $color-border;
+      border-radius: 1.5rem;
+      background-color: $color-bg;
+      img {
+        width: 1.8rem;
+        height: 1.8rem;
+        margin: 0 0.5rem;
+        cursor: pointer;
+        transition: transform .2s, opacity .2s;
+
+        &.active {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+        &:not(.active) {
+          opacity: 0.6;
+        }
+        &:hover {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+      }
+
+      .pencil-container{
+        position: relative;
+
+        // okno wyboru kolorów
+        #Panel {
+          position: absolute;
+          bottom: 2.15rem;               // podnieś panel nad dolny pasek
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 0.5rem;
+          border: 1px solid $color-border;
+          border-radius: 0.25rem;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+          border: 2px solid $color-border;
+          z-index: 10;
+          background-color: $color-bg;
+          // kontener na pojedyncze próbki kolorów
+          #Colors {
+            display: flex;
+            gap: 0.5rem;
+
+            // każda próbka to mały kwadracik
+            div {
+              width: 1.5rem;
+              height: 1.5rem;
+              border-radius: 50%;
+              cursor: pointer;
+              transition: transform 0.15s, box-shadow 0.15s;
+
+              // efekt hover
+              &:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+              }
+
+              // zaznaczenie aktywnego koloru
+              &.active {
+                outline: 2px solid $color-tool-active;
+              }
+            }
+          }
+        }
+      }
+    }//#PencilBox
+  }//#Footer
+}
+#container{ 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+
+// biały panel z cieniem
+.box {
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 360px;
+  padding: 40px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+// logo + napis
+figure {
+  margin: 0 0 32px;
+  img {
+    width: 64px;
+    height: auto;
+  }
+  figcaption {
+    margin-top: 8px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #f76c00;
+  }
+}
+
+// formularz i odstępy między polami
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// pole loginu
+input#login {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  &:focus {
+    border-color: #f76c00;
+  }
+}
+
+// selektor kolorów
+.color-select {
+  position: relative;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  // strzałka
+  &::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid #333;
+    border-bottom: 2px solid #333;
+    transform: rotate(45deg);
+    margin-left: 8px;
+  }
+
+  // domyślnie ukrywamy kółka
+  & > div {
+    display: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin: 4px;
+    cursor: pointer;
+  }
+
+  // po dodaniu klasy .open pokazujemy paletę
+  &.open {
+    // kontener palety
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 8px;
+
+    // i jednocześnie wyświetlamy kółka
+    & > div {
+      display: inline-block;
+    }
+  }
+
+  // konkretne kolory (przykładowe)
+  #c11 { background: #000;   }
+  #c12 { background: #ea4335; }
+  #c13 { background: #fbbc05; }
+  #c14 { background: #34a853; }
+  #c15 { background: #4285f4; }
+  #c16 { background: #9aa0a6; }
+}
+
+// przycisk submit
+button[type='submit'] {
+  margin-top: 24px;
+  padding: 12px 0;
+  width: 100%;
+  border: none;
+  border-radius: 16px;
+  background: #f76c00;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background 0.2s;
+  &:hover {
+    background: darken(#f76c00, 5%);
+  }
+}
+}
