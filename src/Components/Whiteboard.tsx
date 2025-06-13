@@ -23,42 +23,57 @@ async function Whiteboard() {
   const pickHandler = (toolId: string) => {
     pickTool(toolId);
   };
-  
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const bgcanvas = backgroundCanvasRef.current;
-    if (!canvas) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    if (!bgcanvas) return;
-    bgcanvas.width = window.innerWidth;
-    bgcanvas.height = window.innerHeight;
-    const ctx = canvas.getContext("2d");
-    const bgctx = bgcanvas.getContext("2d");
-    if (ctx && bgctx) {
-        drawDottedGrid(bgctx, canvas.width, canvas.height);
-        setCtx(ctx);
-    }
-    if(username && whiteboardId){
-    const connectionString =`http://localhost:5000/whiteboard/${whiteboardId}?username=${username}`;
-    const newConnection = new HubConnectionBuilder()
-      .withUrl(connectionString)
-      .withAutomaticReconnect()
-      .build();
-    
-    setConnection(newConnection);
 
-    newConnection.start()
-    .then(() => {
-      console.log("Połączenie z SignalR Hub nawiązane pomyślnie!");
-    })
-    .catch(e => {
-      console.error("Błąd podczas nawiązywania połączenia z SignalR: ", e);
-    });
-  return () => {
-    newConnection.stop();
-  };
-}}, [username, whiteboardId]);
+  useEffect(() => {
+      const canvas = canvasRef.current;
+      const bgcanvas = backgroundCanvasRef.current;
+      if (!canvas || !bgcanvas) return;
+      
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      bgcanvas.width = window.innerWidth;
+      bgcanvas.height = window.innerHeight;
+      
+      const ctx = canvas.getContext("2d");
+      const bgctx = bgcanvas.getContext("2d");
+
+      if (ctx && bgctx) {
+          drawDottedGrid(bgctx, canvas.width, canvas.height);
+          setCtx(ctx);
+      }
+
+      let connection: HubConnection;
+
+      const connectToHub = async () => {
+          if (username && whiteboardId) {
+              const connectionString = `http://localhost:5000/whiteboard/${whiteboardId}?username=${username}`;
+              
+              connection = new HubConnectionBuilder()
+                  .withUrl(connectionString)
+                  .withAutomaticReconnect()
+                  .build();
+              
+              setConnection(connection);
+
+              try {
+                  await connection.start();
+                  console.log("Połączenie z SignalR Hub nawiązane pomyślnie!");
+              } catch (e) {
+                  console.error("Błąd podczas nawiązywania połączenia z SignalR: ", e);
+              }
+          }
+      };
+
+      connectToHub();
+
+      return () => {
+          if (connection) {
+              connection.stop();
+          }
+      };
+  }, [username, whiteboardId]);
+
+
   useDrawing(pickedTool, canvasRef, cursorCanvasRef, ctx, color, thickness, connection, username);
 
   return (
@@ -66,6 +81,7 @@ async function Whiteboard() {
       <Header />
       <canvas 
       ref={canvasRef}
+      style={{zIndex: 1}}
       ></canvas>
       <canvas
         ref={cursorCanvasRef}

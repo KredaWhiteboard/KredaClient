@@ -42,6 +42,7 @@ export function useDrawing(
 		}, 50),
 		[connection]
 	);
+
 	//GLOWNA LOGIKA RYSOWANIA
 	useEffect(() => {
 		console.log("🔔 useDrawing efekt, ctx:", ctx, "tool:", pickedTool);
