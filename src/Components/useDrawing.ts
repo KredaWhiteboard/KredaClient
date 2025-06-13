@@ -5,14 +5,14 @@ import { throttle } from "lodash";
 type ColorObjectType = { r: number, g: number, b: number, a: number };
 
 type SentUserAction = {
-	X: number;
-	Y: number;
-	Tool: 'Pencil' | 'Rubber' | null;
-	BrushSize?: number | null;
-	R?: number | null,
-	G?: number | null,
-	B?: number | null,
-	A?: number | null,
+	x: number;
+	y: number;
+	tool: 'Pencil' | 'Rubber' | null;
+	brushSize?: number | null;
+	r?: number | null,
+	g?: number | null,
+	b?: number | null,
+	a?: number | null,
 };
 
 type ReceivedUserAction = SentUserAction & { username: string };
@@ -20,6 +20,7 @@ type ReceivedUserAction = SentUserAction & { username: string };
 export function useDrawing(
 	pickedTool: string,
 	canvasRef: React.RefObject<HTMLCanvasElement | null>,
+	cursorCanvasRef: React.RefObject<HTMLCanvasElement | null>,
 	ctx: CanvasRenderingContext2D | null,
 	color: ColorObjectType,
 	thickness: number,
@@ -41,22 +42,7 @@ export function useDrawing(
 		}, 50),
 		[connection]
 	);
-
-	// const drawCursor = (ctx: CanvasRenderingContext2D, x: number, y: number, username: string) => {
-	// 	ctx.fillStyle = "black";
-	// 	ctx.strokeStyle = 'white';
-	// 	ctx.lineWidth = 2;
-	// 	ctx.beginPath();
-	// 	ctx.moveTo(x, y);
-	// 	ctx.lineTo(x + 10, y + 25);
-	// 	ctx.lineTo(x + 20, y + 20);
-	// 	ctx.closePath();
-	// 	ctx.fill();
-	// 	ctx.stroke();
-	// 	ctx.font = '14px sans-serif';
-	// 	ctx.fillText(username, x + 25, y + 35);
-	// };
-
+	//GLOWNA LOGIKA RYSOWANIA
 	useEffect(() => {
 		console.log("🔔 useDrawing efekt, ctx:", ctx, "tool:", pickedTool);
 		console.log("🔍 username:", username);
@@ -73,11 +59,11 @@ export function useDrawing(
 				ctx.moveTo(event.offsetX, event.offsetY);
 
 				const startAction: SentUserAction = {
-					X: event.offsetX,
-					Y: event.offsetY,
-					Tool: pickedTool as 'Pencil' | 'Rubber',
-					BrushSize: pickedTool === 'Pencil' ? thickness : 35,
-					R: color.r, G: color.g, B: color.b, A: color.a,
+					x: event.offsetX,
+					y: event.offsetY,
+					tool: pickedTool as 'Pencil' | 'Rubber',
+					brushSize: pickedTool === 'Pencil' ? thickness : 35,
+					r: color.r, g: color.g, b: color.b, a: color.a,
 				};
 				if (connection) connection.invoke("SendUserAction", startAction);
 			}
@@ -102,19 +88,19 @@ export function useDrawing(
 				}
 
 				action = {
-					X: offsetX,
-					Y: offsetY,
-					Tool: pickedTool as 'Pencil' | 'Rubber',
-					BrushSize: pickedTool === 'Pencil' ? thickness : 35,
-					R: color.r, G: color.g, B: color.b, A: color.a,
+					x: offsetX,
+					y: offsetY,
+					tool: pickedTool as 'Pencil' | 'Rubber',
+					brushSize: pickedTool === 'Pencil' ? thickness : 35,
+					r: color.r, g: color.g, b: color.b, a: color.a,
 				};
 			} else {
 				action = {
-					X: offsetX,
-					Y: offsetY,
-					Tool: null,
-					BrushSize: null,
-					R: null, G: null, B: null, A: null,
+					x: offsetX,
+					y: offsetY,
+					tool: null,
+					brushSize: null,
+					r: null, g: null, b: null, a: null,
 				};
 			}
 			throttledSendAction(action);
@@ -128,11 +114,11 @@ export function useDrawing(
 				ctx.closePath();
 
 				const stopAction: SentUserAction = {
-					X: event.offsetX,
-					Y: event.offsetY,
-					Tool: null,
-					BrushSize: null,
-					R: null, G: null, B: null, A: null,
+					x: event.offsetX,
+					y: event.offsetY,
+					tool: null,
+					brushSize: null,
+					r: null, g: null, b: null, a: null,
 				};
 				if (connection) connection.invoke("SendUserAction", stopAction);
 			}
@@ -151,41 +137,32 @@ export function useDrawing(
 			throttledSendAction.cancel();
 		};
 	}, [ctx, pickedTool, color, thickness, connection, username, throttledSendAction]);
-
+	//PRZECHWYTYWANIE DZIALAN UZYTKOWNIKOW
 	useEffect(() => {
-		if (!connection || !ctx || !username) return;
-
+		if (!connection || !ctx) return;
 		const handleRemoteAction = (actionData: ReceivedUserAction) => {
-			if (!actionData.username || actionData.username === username || actionData.X === undefined || actionData.Y === undefined) return;
-
 			const remoteUsername = actionData.username;
 			const userState = remoteUsersState.current.get(remoteUsername);
-			const wasDrawing = userState?.Tool === 'Pencil';
 
-			ctx.save();
-			try {
-				if (actionData.Tool === "Pencil" && actionData.R != null && actionData.G != null && actionData.B != null && actionData.A != null) {
-					ctx.strokeStyle = `rgba(${actionData.R}, ${actionData.G}, ${actionData.B}, ${actionData.A > 1 ? actionData.A / 255 : 1})`;
-					ctx.lineWidth = actionData.BrushSize ?? 1;
-					ctx.lineCap = "round";
-					ctx.lineJoin = "round";
+			if (username != remoteUsername && actionData.tool === "Pencil" && actionData.r != null && actionData.g != null && actionData.b != null && actionData.a != null && actionData.brushSize != null) {
+				ctx.beginPath();
+				ctx.lineCap = "round";
+				ctx.lineJoin = "round";
+				ctx.lineWidth = actionData.brushSize;
+				ctx.strokeStyle = `rgba(${actionData.r}, ${actionData.g}, ${actionData.b}, ${actionData.a > 1 ? actionData.a / 255 : 1})`;
 
-					if (!wasDrawing) {
-						ctx.beginPath();
-						ctx.moveTo(actionData.X, actionData.Y);
-						ctx.lineTo(actionData.X, actionData.Y);
-						ctx.stroke();
-					} else if (userState) {
-						ctx.beginPath();
-						ctx.moveTo(userState.X, userState.Y);
-						ctx.lineTo(actionData.X, actionData.Y);
-						ctx.stroke();
-					}
-				} else if (actionData.Tool === "Rubber") {
-					ctx.clearRect(actionData.X - 17.5, actionData.Y - 17.5, 35, 35);
+				if (userState && userState.tool === 'Pencil') {
+					ctx.moveTo(userState.x, userState.y);
+					ctx.lineTo(actionData.x, actionData.y);
+				} else {
+					ctx.moveTo(actionData.x, actionData.y);
+					ctx.lineTo(actionData.x, actionData.y);
 				}
-			} finally {
-				ctx.restore();
+				ctx.stroke();
+				ctx.closePath();
+
+			} else if (actionData.tool === "Rubber") {
+				ctx.clearRect(actionData.x - 17.5, actionData.y - 17.5, 35, 35);
 			}
 
 			remoteUsersState.current.set(remoteUsername, actionData);
@@ -198,6 +175,50 @@ export function useDrawing(
 		};
 
 	}, [connection, ctx, username]);
+	//KURSOR
+	useEffect(() => {
+		if (!cursorCanvasRef.current || !username) return;
+
+		const cursorCanvas = cursorCanvasRef.current;
+		const cursorCtx = cursorCanvas.getContext('2d');
+		if (!cursorCtx) return;
+
+		cursorCanvas.width = window.innerWidth;
+		cursorCanvas.height = window.innerHeight;
+
+		let animationFrameId: number;
+
+		const drawCursors = () => {
+			cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+
+			remoteUsersState.current.forEach((userAction, uname) => {
+				if (uname === username) return;
+
+				const { x, y } = userAction;
+				cursorCtx.shadowColor = "rgba(0, 0, 0, 0.5)";
+				cursorCtx.shadowBlur = 5;
+				cursorCtx.fillStyle = 'blue';
+				cursorCtx.beginPath();
+				cursorCtx.moveTo(x, y);
+				cursorCtx.lineTo(x + 12, y + 12);
+				cursorCtx.lineTo(x, y + 17);
+				cursorCtx.closePath();
+				cursorCtx.fill();
+				cursorCtx.shadowBlur = 0;
+				cursorCtx.fillStyle = 'blue';
+				cursorCtx.font = "12px Arial";
+				cursorCtx.fillText(uname, x + 20, y + 34);
+			});
+
+			animationFrameId = requestAnimationFrame(drawCursors);
+		};
+
+		drawCursors();
+
+		return () => {
+			cancelAnimationFrame(animationFrameId);
+		};
+	}, [username]);
 }
 
 export function drawDottedGrid(ctx: CanvasRenderingContext2D, width: number, height: number) {

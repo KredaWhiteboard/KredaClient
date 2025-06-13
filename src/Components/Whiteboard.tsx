@@ -9,6 +9,7 @@ type ColorObjectType = {r:number, g:number, b:number, a:number};
 
 async function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cursorCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [pickedTool, pickTool] = useState("Pencil");
   const [color, pickColor] = useState({ r: 0, g: 0, b: 0, a: 1 });
@@ -52,7 +53,7 @@ async function Whiteboard() {
     newConnection.stop();
   };
 }}, [username, whiteboardId]);
-  useDrawing(pickedTool, canvasRef, ctx, color, thickness, connection, username);
+  useDrawing(pickedTool, canvasRef, cursorCanvasRef, ctx, color, thickness, connection, username);
 
   return (
     <div id="Board">
@@ -60,6 +61,10 @@ async function Whiteboard() {
       <canvas 
       ref={canvasRef}
       ></canvas>
+      <canvas
+        ref={cursorCanvasRef}
+        style={{ position: 'absolute', top: 0, left: 0, zIndex: 100000, pointerEvents: 'none' }}
+      />
       <Footer
         selectedTool={pickedTool}
         changeTool={pickHandler}
