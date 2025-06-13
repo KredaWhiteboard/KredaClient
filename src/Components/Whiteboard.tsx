@@ -10,6 +10,7 @@ type ColorObjectType = {r:number, g:number, b:number, a:number};
 async function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cursorCanvasRef = useRef<HTMLCanvasElement>(null);
+  const backgroundCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [pickedTool, pickTool] = useState("Pencil");
   const [color, pickColor] = useState({ r: 0, g: 0, b: 0, a: 1 });
@@ -25,12 +26,17 @@ async function Whiteboard() {
   
   useEffect(() => {
     const canvas = canvasRef.current;
+    const bgcanvas = backgroundCanvasRef.current;
     if (!canvas) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    if (!bgcanvas) return;
+    bgcanvas.width = window.innerWidth;
+    bgcanvas.height = window.innerHeight;
     const ctx = canvas.getContext("2d");
-    if (ctx) {
-        drawDottedGrid(ctx, canvas.width, canvas.height);
+    const bgctx = bgcanvas.getContext("2d");
+    if (ctx && bgctx) {
+        drawDottedGrid(bgctx, canvas.width, canvas.height);
         setCtx(ctx);
     }
     if(username && whiteboardId){
@@ -53,7 +59,7 @@ async function Whiteboard() {
     newConnection.stop();
   };
 }}, [username, whiteboardId]);
-  useDrawing(pickedTool, canvasRef, cursorCanvasRef, ctx, color, thickness, connection, username);
+  useDrawing(pickedTool, canvasRef, cursorCanvasRef, backgroundCanvasRef, ctx, color, thickness, connection, username);
 
   return (
     <div id="Board">
@@ -63,7 +69,11 @@ async function Whiteboard() {
       ></canvas>
       <canvas
         ref={cursorCanvasRef}
-        style={{ position: 'absolute', top: 0, left: 0, zIndex: 100000, pointerEvents: 'none' }}
+        style={{ position: 'absolute', top: 0, left: 0, zIndex: 2, pointerEvents: 'none' }}
+      />
+      <canvas
+        ref={backgroundCanvasRef}
+        style={{ position: 'absolute', top: 0, left: 0, zIndex: 3, pointerEvents: 'none' }}
       />
       <Footer
         selectedTool={pickedTool}

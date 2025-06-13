@@ -21,6 +21,7 @@ export function useDrawing(
 	pickedTool: string,
 	canvasRef: React.RefObject<HTMLCanvasElement | null>,
 	cursorCanvasRef: React.RefObject<HTMLCanvasElement | null>,
+	backgroundCanvasRef: React.RefObject<HTMLCanvasElement | null>,
 	ctx: CanvasRenderingContext2D | null,
 	color: ColorObjectType,
 	thickness: number,
