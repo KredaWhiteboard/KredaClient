@@ -55,7 +55,7 @@ function Whiteboard() {
               
               setConnection(connection);
 
-              connection.start();
+            connection.start();
           }
       };
 
