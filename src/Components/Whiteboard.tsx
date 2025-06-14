@@ -3,6 +3,9 @@ import { drawDottedGrid, useDrawing} from "./useDrawing";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { useUser } from "../UserContext";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useZoomPan } from "./useZoomPan";
+import { usePanning } from "./usePanning";
 
 
 type ColorObjectType = {r:number, g:number, b:number, a:number};
@@ -19,16 +22,42 @@ function Whiteboard() {
   const [connection, setConnection] = useState<HubConnection | null>(null);
   const {username} = useUser();
   const {whiteboardId} = useParams();
-  
+  const navigate = useNavigate();
   const pickHandler = (toolId: string) => {
     pickTool(toolId);
   };
+
+  const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+    const {scale,offset: zoomOffset}= useZoomPan({
+      canvasRef
+    });
+    
+    const { offset: panOffset } = usePanning({
+      canvasRef,
+      enabled: pickedTool === "Hand",
+      scale
+    });
+
+    const transform = 
+    `translate(${zoomOffset.x + panOffset.x}px, ${zoomOffset.y + panOffset.y}px) ` +
+    `scale(${scale})`;
+
+  useEffect(() =>{
+    if(!username){
+      navigate(`/?returnId=${whiteboardId}`);
+    }
+  },[])
 
   useEffect(() => {
       const canvas = canvasRef.current;
       const bgcanvas = backgroundCanvasRef.current;
       if (!canvas || !bgcanvas) return;
       
+      if (!username)
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       bgcanvas.width = window.innerWidth;
@@ -75,15 +104,30 @@ function Whiteboard() {
     <div id="Board">
       <Header />
       <canvas 
-      ref={canvasRef}
-      style={{zIndex: 1}}
+        ref={canvasRef}
+        width={canvasSize.width}
+        height={canvasSize.height}
+        style={{
+          zIndex: 1,
+          transformOrigin: "0 0",
+          transform: transform,
+          cursor: pickedTool === "Pencil"
+            ? "url(/pencil.svg) 0 16, crosshair"
+            : pickedTool === "Hand"
+            ? "grab"
+            : "default",
+        }}
       ></canvas>
       <canvas
         ref={cursorCanvasRef}
+        width={canvasSize.width}
+        height={canvasSize.height}
         style={{ position: 'absolute', top: 0, left: 0, zIndex: 2, pointerEvents: 'none' }}
       />
       <canvas
         ref={backgroundCanvasRef}
+        width={canvasSize.width}
+        height={canvasSize.height}
         style={{ position: 'absolute', top: 0, left: 0, zIndex: 3, pointerEvents: 'none' }}
       />
       <Footer
