@@ -122,13 +122,15 @@ function Whiteboard() {
         ref={cursorCanvasRef}
         width={canvasSize.width}
         height={canvasSize.height}
-        style={{ position: 'absolute', top: 0, left: 0, zIndex: 2, pointerEvents: 'none' }}
+        style={{ position: 'absolute', top: 0, left: 0, zIndex: 2,transformOrigin: "0 0",
+          transform: transform, pointerEvents: 'none' }}
       />
       <canvas
         ref={backgroundCanvasRef}
         width={canvasSize.width}
         height={canvasSize.height}
-        style={{ position: 'absolute', top: 0, left: 0, zIndex: 3, pointerEvents: 'none' }}
+        style={{ position: 'absolute', top: 0, left: 0, zIndex: 3,transformOrigin: "0 0",
+          transform: transform, pointerEvents: 'none' }}
       />
       <Footer
         selectedTool={pickedTool}
