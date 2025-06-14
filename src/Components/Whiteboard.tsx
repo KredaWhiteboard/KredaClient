@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 
 type ColorObjectType = {r:number, g:number, b:number, a:number};
 
-async function Whiteboard() {
+function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cursorCanvasRef = useRef<HTMLCanvasElement>(null);
   const backgroundCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,7 +46,7 @@ async function Whiteboard() {
 
       const connectToHub = async () => {
           if (username && whiteboardId) {
-              const connectionString = `http://localhost:5000/whiteboard/${whiteboardId}?username=${username}`;
+              const connectionString = `http://localhost:5000/whiteboards/${whiteboardId}?username=${username}`;
               
               connection = new HubConnectionBuilder()
                   .withUrl(connectionString)
@@ -55,12 +55,7 @@ async function Whiteboard() {
               
               setConnection(connection);
 
-              try {
-                  await connection.start();
-                  console.log("Połączenie z SignalR Hub nawiązane pomyślnie!");
-              } catch (e) {
-                  console.error("Błąd podczas nawiązywania połączenia z SignalR: ", e);
-              }
+              connection.start();
           }
       };
 

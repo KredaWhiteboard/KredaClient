@@ -23,10 +23,10 @@ function WelcomePage() {
         body: JSON.stringify({ /* tu możesz przesłać dane początkowe */ }),
       });
       if (!res.ok) throw new Error("Nie udało się utworzyć tablicy");
-
-      const { id: boardId } = await res.json();
-
-      navigate(`/Whiteboard/${boardId}`);
+      
+      var id = await res.json();
+      console.log(id);
+      navigate(`/whiteboards/${id}?username=${NAME}`);
     } catch (err: any) {
       console.error(err);
       alert(err.message || "Coś poszło nie tak przy tworzeniu tablicy.");
