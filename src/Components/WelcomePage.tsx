@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../UserContext";
+import { useSearchParams } from 'react-router-dom';
 
 function WelcomePage() {
   const [login, setLogin] = useState("");
   const navigate = useNavigate();
   const {setUsername} = useUser();
+  const [searchParams] = useSearchParams();
 
   const Submited = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -15,22 +17,28 @@ function WelcomePage() {
       return;
     }
     setUsername(NAME);
-
-    try {
-      const res = await fetch("http://localhost:5000/whiteboards", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ /* tu możesz przesłać dane początkowe */ }),
-      });
-      if (!res.ok) throw new Error("Nie udało się utworzyć tablicy");
-      
-      var id = await res.json();
-      console.log(id);
-      navigate(`/whiteboards/${id}?username=${NAME}`);
-    } catch (err: any) {
-      console.error(err);
-      alert(err.message || "Coś poszło nie tak przy tworzeniu tablicy.");
+//sprawdzenie czy mamy juz id tablicy
+    const returnId = searchParams.get('returnId');
+    if(returnId){
+      navigate(`/whiteboards/${returnId}?username=${NAME}`);
     }
+    else{
+      try {
+        const res = await fetch("http://localhost:5000/whiteboards", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ /* tu możesz przesłać dane początkowe */ }),
+        });
+        if (!res.ok) throw new Error("Nie udało się utworzyć tablicy");
+        
+        var id = await res.json();
+        console.log(id);
+        navigate(`/whiteboards/${id}?username=${NAME}`);
+      } catch (err: any) {
+        console.error(err);
+        alert(err.message || "Coś poszło nie tak przy tworzeniu tablicy.");
+      }
+   }
   };
   return (
     <div id="container" className="welcome-page">

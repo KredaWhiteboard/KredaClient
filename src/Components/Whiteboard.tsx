@@ -3,6 +3,8 @@ import { drawDottedGrid, useDrawing} from "./useDrawing";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { useUser } from "../UserContext";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 
 type ColorObjectType = {r:number, g:number, b:number, a:number};
@@ -19,16 +21,24 @@ function Whiteboard() {
   const [connection, setConnection] = useState<HubConnection | null>(null);
   const {username} = useUser();
   const {whiteboardId} = useParams();
+  const navigate = useNavigate();
   
   const pickHandler = (toolId: string) => {
     pickTool(toolId);
   };
+
+  useEffect(() =>{
+    if(!username){
+      navigate(`/?returnId=${whiteboardId}`);
+    }
+  },[])
 
   useEffect(() => {
       const canvas = canvasRef.current;
       const bgcanvas = backgroundCanvasRef.current;
       if (!canvas || !bgcanvas) return;
       
+      if (!username)
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       bgcanvas.width = window.innerWidth;
