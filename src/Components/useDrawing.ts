@@ -68,7 +68,7 @@ export function useDrawing(
 				};
 				if (connection) connection.invoke("SendUserAction", startAction);
 			}
-			
+
 		};
 
 		const mouseMoveHandler = (event: MouseEvent) => {
@@ -77,7 +77,7 @@ export function useDrawing(
 			let action: SentUserAction;
 
 			if (isDrawing.current && (pickedTool === "Pencil" || pickedTool === "Rubber")) {
-				  console.log("mousemove", event.offsetX, event.offsetY);
+				console.log("mousemove", event.offsetX, event.offsetY);
 
 				if (pickedTool === "Pencil") {
 					ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a > 1 ? color.a / 255 : color.a})`;
